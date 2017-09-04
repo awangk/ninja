@@ -28,11 +28,10 @@ namespace {
 
 void Usage() {
   printf(
-"usage: ninja -t msvc [options] -- cl.exe /showIncludes /otherArgs\n"
+"usage: ninja -t fxc [options] -- fxc.exe /Vi /otherArgs\n"
 "options:\n"
 "  -e ENVFILE load environment block from ENVFILE as environment\n"
 "  -o FILE    write output dependency information to FILE.d\n"
-"  -p STRING  localized prefix of msvc's /showIncludes output\n"
          );
 }
 
@@ -77,7 +76,7 @@ void WriteDepFileOrDie(const char* object_path, const CLParser& parse) {
 
 }  // anonymous namespace
 
-int MSVCHelperMain(int argc, char** argv) {
+int FXCHelperMain(int argc, char** argv) {
   const char* output_filename = NULL;
   const char* envfile = NULL;
 
@@ -86,7 +85,6 @@ int MSVCHelperMain(int argc, char** argv) {
     { NULL, 0, NULL, 0 }
   };
   int opt;
-  string deps_prefix;
   while ((opt = getopt_long(argc, argv, "e:o:p:h", kLongOptions, NULL)) != -1) {
     switch (opt) {
       case 'e':
@@ -94,9 +92,6 @@ int MSVCHelperMain(int argc, char** argv) {
         break;
       case 'o':
         output_filename = optarg;
-        break;
-      case 'p':
-        deps_prefix = optarg;
         break;
       case 'h':
       default:
@@ -129,7 +124,7 @@ int MSVCHelperMain(int argc, char** argv) {
   if (output_filename) {
     CLParser parser;
     string err;
-    if (!parser.Parse(output, deps_prefix, "", &output, &err))
+    if (!parser.Parse(output, "fxc", "", &output, &err))
       Fatal("%s\n", err.c_str());
     WriteDepFileOrDie(output_filename, parser);
   }

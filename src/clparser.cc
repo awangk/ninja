@@ -40,7 +40,8 @@ bool EndsWith(const string& input, const string& needle) {
 
 // static
 string CLParser::FilterShowIncludes(const string& line,
-                                    const string& deps_prefix) {
+                                    const string& deps_prefix,
+                                    const string& deps_suffix) {
   const string kDepsPrefixEnglish = "Note: including file: ";
   const char* in = line.c_str();
   const char* end = in + line.size();
@@ -50,6 +51,9 @@ string CLParser::FilterShowIncludes(const string& line,
     in += prefix.size();
     while (*in == ' ')
       ++in;
+    if (!deps_suffix.empty()) {
+      
+    }
     return line.substr(in - line.c_str());
   }
   return "";
@@ -74,7 +78,7 @@ bool CLParser::FilterInputFilename(string line) {
 }
 
 // static
-bool CLParser::Parse(const string& output, const string& deps_prefix,
+bool CLParser::Parse(const string& output, const string& deps_prefix, const string& deps_suffix,
                      string* filtered_output, string* err) {
   METRIC_RECORD("CLParser::Parse");
 
@@ -90,8 +94,7 @@ bool CLParser::Parse(const string& output, const string& deps_prefix,
     if (end == string::npos)
       end = output.size();
     string line = output.substr(start, end - start);
-
-    string include = FilterShowIncludes(line, deps_prefix);
+    string include = FilterShowIncludes(line, deps_prefix, deps_suffix);
     if (!include.empty()) {
       string normalized;
 #ifdef _WIN32

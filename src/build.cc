@@ -754,10 +754,10 @@ bool Builder::FinishCommand(CommandRunner::Result* result, string* err) {
   // build perspective.
   vector<Node*> deps_nodes;
   string deps_type = edge->GetBinding("deps");
-  const string deps_prefix = edge->GetBinding("msvc_deps_prefix");
+  const string msvc_deps_prefix = edge->GetBinding("msvc_deps_prefix");
   if (!deps_type.empty()) {
     string extract_err;
-    if (!ExtractDeps(result, deps_type, deps_prefix, &deps_nodes,
+    if (!ExtractDeps(result, deps_type, msvc_deps_prefix, &deps_nodes,
                      &extract_err) &&
         result->success()) {
       if (!result->output.empty())
@@ -861,13 +861,13 @@ bool Builder::FinishCommand(CommandRunner::Result* result, string* err) {
 
 bool Builder::ExtractDeps(CommandRunner::Result* result,
                           const string& deps_type,
-                          const string& deps_prefix,
+                          const string& msvc_deps_prefix,
                           vector<Node*>* deps_nodes,
                           string* err) {
   if (deps_type == "msvc") {
     CLParser parser;
     string output;
-    if (!parser.Parse(result->output, deps_prefix, &output, err))
+    if (!parser.Parse(result->output, msvc_deps_prefix, "", &output, err))
       return false;
     result->output = output;
     for (set<string>::iterator i = parser.includes_.begin();
@@ -879,6 +879,18 @@ bool Builder::ExtractDeps(CommandRunner::Result* result,
       deps_nodes->push_back(state_->GetNode(*i, ~0u));
     }
   } else
+  if (deps_type == "fxc") {
+    printf("FXC!!!\n");
+    CLParser parser;
+    string output;
+    if (!parser.Parse(result->output, "Opening file [", "]", &output, err))
+      return false;
+    result->output = output;
+    for (set<string>::iterator i = parser.includes_.begin();
+         i != parser.includes_.end(); ++i) {
+      deps_nodes->push_back(state_->GetNode(*i, ~0u));
+    }
+  } else 
   if (deps_type == "gcc") {
     string depfile = result->edge->GetUnescapedDepfile();
     if (depfile.empty()) {

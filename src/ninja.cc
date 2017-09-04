@@ -49,6 +49,9 @@
 // Defined in msvc_helper_main-win32.cc.
 int MSVCHelperMain(int argc, char** argv);
 
+// Defined in fxc_helper_main-win32.cc.
+int FXCHelperMain(int argc, char** argv);
+
 // Defined in minidump-win32.cc.
 void CreateWin32MiniDump(_EXCEPTION_POINTERS* pep);
 #endif
@@ -113,6 +116,7 @@ struct NinjaMain : public BuildLogUser {
   int ToolDeps(const Options* options, int argc, char* argv[]);
   int ToolBrowse(const Options* options, int argc, char* argv[]);
   int ToolMSVC(const Options* options, int argc, char* argv[]);
+  int ToolFXC(const Options* options, int argc, char* argv[]);
   int ToolTargets(const Options* options, int argc, char* argv[]);
   int ToolCommands(const Options* options, int argc, char* argv[]);
   int ToolClean(const Options* options, int argc, char* argv[]);
@@ -387,6 +391,7 @@ int NinjaMain::ToolBrowse(const Options* options, int argc, char* argv[]) {
 #endif  // _WIN32
 
 #if defined(_MSC_VER)
+
 int NinjaMain::ToolMSVC(const Options* options, int argc, char* argv[]) {
   // Reset getopt: push one argument onto the front of argv, reset optind.
   argc++;
@@ -394,6 +399,15 @@ int NinjaMain::ToolMSVC(const Options* options, int argc, char* argv[]) {
   optind = 0;
   return MSVCHelperMain(argc, argv);
 }
+
+int NinjaMain::ToolFXC(const Options* options, int argc, char* argv[]) {
+  // Reset getopt: push one argument onto the front of argv, reset optind.
+  argc++;
+  argv--;
+  optind = 0;
+  return FXCHelperMain(argc, argv);
+}
+
 #endif
 
 int ToolTargetsList(const vector<Node*>& nodes, int depth, int indent) {
@@ -747,6 +761,8 @@ const Tool* ChooseTool(const string& tool_name) {
 #if defined(_MSC_VER)
     { "msvc", "build helper for MSVC cl.exe (EXPERIMENTAL)",
       Tool::RUN_AFTER_FLAGS, &NinjaMain::ToolMSVC },
+    { "fxc", "build helper for FXC fxc.exe (EXPERIMENTAL)",
+      Tool::RUN_AFTER_FLAGS, &NinjaMain::ToolFXC },
 #endif
     { "clean", "clean built files",
       Tool::RUN_AFTER_LOAD, &NinjaMain::ToolClean },
