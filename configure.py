@@ -501,8 +501,7 @@ if platform.is_windows():
     for name in ['subprocess-win32',
                  'includes_normalize-win32',
                  'msvc_helper-win32',
-                 'msvc_helper_main-win32',
-                 'fxc_helper_main-win32']:
+                 'msvc_helper_main-win32']:
         objs += cxx(name)
     if platform.is_msvc():
         objs += cxx('minidump-win32')
@@ -563,7 +562,7 @@ for name in ['build_log_test',
              'util_test']:
     objs += cxx(name)
 if platform.is_windows():
-    for name in ['includes_normalize_test', 'msvc_helper_test', 'fxc_helper_test']:
+    for name in ['includes_normalize_test', 'msvc_helper_test']:
         objs += cxx(name)
 
 ninja_test = n.build(binary('ninja_test'), 'link', objs, implicit=ninja_lib,

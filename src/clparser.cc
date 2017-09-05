@@ -42,17 +42,18 @@ bool EndsWith(const string& input, const string& needle) {
 string CLParser::FilterShowIncludes(const string& line,
                                     const string& deps_prefix,
                                     const string& deps_suffix) {
-  const string kDepsPrefixEnglish = "Note: including file: ";
   const char* in = line.c_str();
-  const char* end = in + line.size();
-  const string& prefix = deps_prefix.empty() ? kDepsPrefixEnglish : deps_prefix;
-  if (end - in > (int)prefix.size() &&
-      memcmp(in, prefix.c_str(), (int)prefix.size()) == 0) {
-    in += prefix.size();
+  const char* end = in + line.size();  
+  if (end - in > (int)deps_prefix.size() &&
+      memcmp(in, deps_prefix.c_str(), (int)deps_prefix.size()) == 0) {
+    in += deps_prefix.size();
     while (*in == ' ')
       ++in;
     if (!deps_suffix.empty()) {
-      
+      const char *suffix = strstr(in, deps_suffix.c_str());
+      if (!suffix)
+        return "";
+      return string(in, suffix);
     }
     return line.substr(in - line.c_str());
   }

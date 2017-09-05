@@ -865,9 +865,11 @@ bool Builder::ExtractDeps(CommandRunner::Result* result,
                           vector<Node*>* deps_nodes,
                           string* err) {
   if (deps_type == "msvc") {
+    const string kDepsPrefixEnglish = "Note: including file: ";
+    const string& prefix = msvc_deps_prefix.empty() ? kDepsPrefixEnglish : msvc_deps_prefix;
     CLParser parser;
     string output;
-    if (!parser.Parse(result->output, msvc_deps_prefix, "", &output, err))
+    if (!parser.Parse(result->output, prefix, "", &output, err))
       return false;
     result->output = output;
     for (set<string>::iterator i = parser.includes_.begin();
@@ -880,10 +882,9 @@ bool Builder::ExtractDeps(CommandRunner::Result* result,
     }
   } else
   if (deps_type == "fxc") {
-    printf("FXC!!!\n");
     CLParser parser;
     string output;
-    if (!parser.Parse(result->output, "Opening file [", "]", &output, err))
+    if (!parser.Parse(result->output, "Resolved to [", "]", &output, err))
       return false;
     result->output = output;
     for (set<string>::iterator i = parser.includes_.begin();
