@@ -86,7 +86,7 @@ int MSVCHelperMain(int argc, char** argv) {
     { NULL, 0, NULL, 0 }
   };
   int opt;
-  string deps_prefix;
+  string deps_prefix = "Note: including file: ";
   while ((opt = getopt_long(argc, argv, "e:o:p:h", kLongOptions, NULL)) != -1) {
     switch (opt) {
       case 'e':
@@ -129,7 +129,7 @@ int MSVCHelperMain(int argc, char** argv) {
   if (output_filename) {
     CLParser parser;
     string err;
-    if (!parser.Parse(output, deps_prefix, &output, &err))
+    if (!parser.Parse(output, deps_prefix, "", &output, &err))
       Fatal("%s\n", err.c_str());
     WriteDepFileOrDie(output_filename, parser);
   }

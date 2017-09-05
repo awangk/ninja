@@ -28,7 +28,8 @@ struct CLParser {
   /// If a dependency is extracted, returns a nonempty string.
   /// Exposed for testing.
   static string FilterShowIncludes(const string& line,
-                                   const string& deps_prefix);
+                                   const string& deps_prefix,
+                                   const string& deps_suffix);
 
   /// Return true if a mentioned include file is a system path.
   /// Filtering these out reduces dependency information considerably.
@@ -43,7 +44,7 @@ struct CLParser {
   /// Parse the full output of cl, filling filtered_output with the text that
   /// should be printed (if any). Returns true on success, or false with err
   /// filled. output must not be the same object as filtered_object.
-  bool Parse(const string& output, const string& deps_prefix,
+  bool Parse(const string& output, const string& deps_prefix, const string& deps_suffix,
              string* filtered_output, string* err);
 
   set<string> includes_;
